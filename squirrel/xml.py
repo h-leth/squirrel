@@ -1,8 +1,9 @@
 import os
+import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-from .vars import logger
+from .vars import logger, console
 from .vars import PROJECT_FILENAME, WATCH_FILENAME
 from .vars import project_file_path, watch_file_path
 
@@ -192,6 +193,12 @@ def add_watch_entry(total, dt: datetime):
 
 
 def parse(path):
-    parser_save_comments = ET.XMLParser(
-        target=ET.TreeBuilder(insert_comments=True))
-    return ET.parse(path, parser_save_comments)
+    try:
+        parser_save_comments = ET.XMLParser(
+            target=ET.TreeBuilder(insert_comments=True))
+        tree = ET.parse(path, parser_save_comments)
+        return tree
+    except FileNotFoundError:
+        console.print(f'Could not find {path!r};'\
+                      ' Verify that project that initialized correctly.')
+        sys.exit(1)
