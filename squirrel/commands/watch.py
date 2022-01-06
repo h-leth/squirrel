@@ -5,8 +5,6 @@ import functools
 import signal
 from datetime import datetime
 import logging
-
-# from inotifyrecursive import INotify, flags
 from daemonize import Daemonize
 
 from squirrel.plugin import *
@@ -77,8 +75,8 @@ def daemon(wd, logger):
     logger.debug('Adding WatchDog watches')
     watches = wd
     engine = Plugin.load_module()
-    # TODO: Add filetype to project.xml? So it can be the project spesific files
-    # can be called from "engine.file_type"
+    # TODO: Add filetype to project.xml? So it can be project spesific files
+    # can be called from something like "engine.file_type"?
     file_type = ['*.txt']
 
     event_handler = Handler(patterns=file_type)
@@ -95,7 +93,7 @@ def daemon(wd, logger):
             total = engine.get_count(event_handler.files)
             end = time.time()
             logger.info(
-                f'get_count({len(event_handler.files)} files) -> {total} took {end - start}')
+                f'{engine.__name__}: get_count({len(event_handler.files)} files) -> {total} took {end - start}')
             # Clears the list before a new loop starts
             event_handler.files.clear
             added = add_watch_entry(total, datetime.now())

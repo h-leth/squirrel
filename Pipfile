@@ -11,6 +11,8 @@ watchdog = "*"
 [dev-packages]
 codespell = "*"
 flake8 = "*"
+pipenv-setup = "*"
+pytest = "*"
 mypy = "*"
 
 [requires]

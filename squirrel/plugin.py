@@ -15,23 +15,27 @@ class Plugin():
         project_type = get_data_from_project_file()['project-type']
         return importlib.import_module(f'squirrel.plugins.{project_type}')
 
+
 class Handler(PatternMatchingEventHandler):
+    """Checks filesystem for added or modified files"""
+    # List used to store modified and created files
     files = []
 
     def __init__(self, patterns):
-        # Set the patterns for PatternMatchingEventHandler
+        """Set the patterns for PatternMatchingEventHandler"""
+        # 'patterns' is added in watch.py daemon(), set the file type(s) to look for
+        # 'ignore_patterns' ignore hidden files, atleast on unix filesystems
         PatternMatchingEventHandler.__init__(
             self, patterns=patterns, ignore_patterns=['.*'], ignore_directories=True)
-  
+
     def on_created(self, event):
-        # Event is created, you can process it now
+        """Event is created, you can process it now"""
+        # if statement to prevent 'files' to have more than one item of each file
         if event.src_path not in self.files:
             self.files.append(event.src_path)
-            logging.info
-             
 
-  
     def on_modified(self, event):
-        # Event is modified, you can process it now
+        """Event is modified, you can process it now"""
+        # if statement to prevent 'files' to have more than one item of each file
         if event.src_path not in self.files:
-            self.files.append(event.src_path) 
+            self.files.append(event.src_path)
