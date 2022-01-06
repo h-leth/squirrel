@@ -1,5 +1,5 @@
 import sys
-from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
+from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 import time
 
@@ -32,13 +32,7 @@ if __name__ == "__main__":
     observer.start()
     try:
         while True:
-            time.sleep(5)
-            if event_handler.files:
-                for f in event_handler.files:
-                    print(f)
-                    event_handler.files.remove(f)
-            else:
-                continue
+            print(observer._event_queue)
     except KeyboardInterrupt:
         observer.stop()
         observer.join()
