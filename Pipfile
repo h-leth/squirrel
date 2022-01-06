@@ -5,12 +5,13 @@ name = "pypi"
 
 [packages]
 rich = "*"
-inotifyrecursive = "*"
 daemonize = "*"
+watchdog = "*"
 
 [dev-packages]
 codespell = "*"
 flake8 = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.9"
