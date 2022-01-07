@@ -1,5 +1,6 @@
 import importlib
 import logging
+import subprocess
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
@@ -14,6 +15,16 @@ class Plugin():
         The module must have a get_count(files: list) -> int function"""
         project_type = get_data_from_project_file()['project-type']
         return importlib.import_module(f'squirrel.plugins.{project_type}')
+
+    def get_files(path):
+        """Find all files in path"""
+        find_output = subprocess.run(
+            f'find {path} -type f -not -path "*/[@.]*"',
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+        return find_output.stdout.strip().split('\n')
 
 
 class Handler(PatternMatchingEventHandler):

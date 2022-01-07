@@ -1,5 +1,4 @@
 import os
-import subprocess
 import time
 import functools
 import signal
@@ -7,7 +6,7 @@ from datetime import datetime
 import logging
 from daemonize import Daemonize
 
-from squirrel.plugin import *
+from squirrel.plugin import Plugin, Handler, Observer
 from ..vars import logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, DAEMON_NAME, console
 from ..xml import add_watch_entry
 
@@ -72,33 +71,42 @@ def get_daemon_pid() -> int:
 def daemon(wd, logger):
 
     os.chdir(wd)
-    logger.debug('Adding WatchDog watches')
     watches = wd
+    project_files = Plugin.get_files(wd)
+    logger.info(f'{Plugin.get_files.__name__}: Project files intialized.')
+    logger.info(
+        f'{Plugin.get_files.__name__}: {len(project_files)} files found')
     engine = Plugin.load_module()
-    # TODO: Add filetype to project.xml? So it can be project spesific files
+
+    # TODO?: Add filetype to project.xml? So it can be project spesific files
     # can be called from something like "engine.file_type"?
     file_type = ['*.txt']
-
     event_handler = Handler(patterns=file_type)
     observer = Observer()
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
+    logger.debug('Watchdog initialized')
     while True:
-        time.sleep(15)
+        # If modified file found by Watchdog
         if event_handler.files:
-            # For loop to prompt modified files to log
             for file in event_handler.files:
                 logger.info(f'Found a modified file {file.split("/")[-1]}')
+                # Check if modified file exists in project_file list
+                if file not in project_files:
+                    project_files.append(file)
+            # Counts files in project folder
             start = time.time()
-            total = engine.get_count(event_handler.files)
+            total = engine.get_count(project_files)
             end = time.time()
+            count_timer = round(end - start, 3)
             logger.info(
-                f'{engine.__name__}: get_count({len(event_handler.files)} files) -> {total} took {end - start}')
-            # Clears the list before a new loop starts
-            event_handler.files.clear
+                f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {count_timem r}')
             added = add_watch_entry(total, datetime.now())
             if added:
                 logger.debug('A new watch entry was added')
+            # Clears the list before a new loop starts
+            event_handler.files.clear()
+        time.sleep(15)
 
 
 def setup_daemon_logger():
