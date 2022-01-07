@@ -100,7 +100,7 @@ def daemon(wd, logger):
             end = time.time()
             count_timer = round(end - start, 3)
             logger.info(
-                f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {count_timem r}')
+                f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {count_timer}')
             added = add_watch_entry(total, datetime.now())
             if added:
                 logger.debug('A new watch entry was added')
