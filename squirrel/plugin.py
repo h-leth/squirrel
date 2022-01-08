@@ -29,13 +29,13 @@ class Plugin():
 
 class Handler(PatternMatchingEventHandler):
     """Checks filesystem for added or modified files"""
-    # List used to store modified and created files
-    files = []
 
     def __init__(self, patterns):
         """Set the patterns for PatternMatchingEventHandler"""
         # 'patterns' is added in watch.py daemon(), set the file type(s) to look for
         # 'ignore_patterns' ignore hidden files, atleast on unix filesystems
+        # List used to store modified and created files
+        self.files = []
         PatternMatchingEventHandler.__init__(
             self, patterns=patterns, ignore_patterns=['.*'], ignore_directories=True)
 
